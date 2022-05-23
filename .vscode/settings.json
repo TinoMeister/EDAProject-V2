@@ -1,0 +1,27 @@
+{
+    "ros.distro": "foxy",
+    "files.associations": {
+        "chrono": "cpp",
+        "cstddef": "cpp",
+        "cwchar": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "memory": "cpp",
+        "memory_resource": "cpp",
+        "string_view": "cpp",
+        "type_traits": "cpp",
+        "cmath": "cpp",
+        "limits": "cpp",
+        "utility": "cpp",
+        "bitset": "c",
+        "algorithm": "c",
+        "class.h": "c",
+        "*.tcc": "c",
+        "fstream": "c",
+        "sstream": "c",
+        "streambuf": "c",
+        "cstdlib": "c",
+        "*.txx": "c"
+    },
+    "C_Cpp.enhancedColorization": "Enabled"
+}
