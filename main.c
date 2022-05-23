@@ -157,7 +157,7 @@ int main(int argc, char const *argv[])
     ProcessPlan *finalPPlan = NULL;
     Job *finalJb = NULL, *combJb = NULL;
 
-    //jb = loadData(jb);
+    jb = loadData(jb);
     //showAll(jb);
 
     //start = clock();
@@ -191,6 +191,8 @@ int main(int argc, char const *argv[])
 
 
     
+    // jb = loadData(jb); // Load Data
+
     printf("Add Job! \n");
     jb = addJob(jb, 1);
     jb = addJob(jb, 8);
@@ -233,6 +235,8 @@ int main(int argc, char const *argv[])
     showAll(jb);
     //jb = deleteOpJob(jb, 1, 15); // It's supposed to be blank because its delting a index higher then the total of Jobs
     showAll(jb);
+
+    //saveData(jb); // Save Data
     
 
     return 0;
