@@ -68,6 +68,8 @@ void showAll(Job * jb)
                     printf("%d | %d | %d | %d\n", jb->id, temp->id, temp->idMachine, temp->time);
                     temp = temp->next;
                 }
+
+                printf("\n");
             }
             
             jb = jb->next;
@@ -158,15 +160,19 @@ int main(int argc, char const *argv[])
     Job *finalJb = NULL, *combJb = NULL;
 
     jb = loadData(jb);
-    //showAll(jb);
 
-    //start = clock();
+    start = clock();
 
-    //finalJb = getCombinations(jb);
+    finalJb = getCombinations(jb);
+
+    //showAll(finalJb);
     
-    //combJb = getLowerCombinations(finalJb);
+    combJb = getBestCombinations(finalJb);
+    //combJb = getHighestCombinations(finalJb);
+
+    showAll(combJb);
     
-    //finalPPlan = getCombinationsJb(combJb);
+    finalPPlan = getCombinationsJb(combJb);
 
     // Best - 20 | 20 | 28 | 15 | 18 | 22 | 19 | 21 | 
 
@@ -174,14 +180,13 @@ int main(int argc, char const *argv[])
 
     //showPPlan(finalPPlan);
 
-    //getPossibilities(finalPPlan);
+    getPossibilities(finalPPlan);
 
     
-    /*
+    
     end = clock();
     time_taken = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("fun() took %f seconds to execute \n\n", time_taken);
-    */
 
     //showPPlan(finalPPlan);
 
@@ -190,8 +195,12 @@ int main(int argc, char const *argv[])
     //saveData(jb);
 
 
-    
-    // jb = loadData(jb); // Load Data
+    /*
+
+    char loc[256];
+    printf("Put loc of file: ");
+    scanf("%s", loc);
+    jb = loadDataByLoc(jb, loc);
 
     printf("Add Job! \n");
     jb = addJob(jb, 1);
@@ -235,9 +244,7 @@ int main(int argc, char const *argv[])
     showAll(jb);
     //jb = deleteOpJob(jb, 1, 15); // It's supposed to be blank because its delting a index higher then the total of Jobs
     showAll(jb);
-
-    //saveData(jb); // Save Data
-    
+    */
 
     return 0;
 }

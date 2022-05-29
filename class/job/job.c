@@ -5,11 +5,11 @@
 // Get the total of Jobs in the list
 int getSizeJb(Job* jb)
 {
-    int total = 1;
+    int total = 0;
 
     while (jb)
     {
-        total += 1;
+        total++;
         jb = jb->next;
     }
 
@@ -193,25 +193,25 @@ Job* addOpJobNOrder(Job* jb, int idJob, int idOp, int idMachine, int time)
 
 Job* createJob(Job* jb, int idJob, Operation* op)
 {
-    Job *newJob = NULL, *temp = jb;    
+    Job *newJob = NULL, *temp = jb; 
 
+    // Add a new Job
     newJob = addJob(newJob, idJob);
 
+    // If its not Null then add the operation to the job
     if (newJob) newJob = addOpJobNOrder(newJob, idJob, op->id, op->idMachine, op->time);
 
+    // Save it in the list
     newJob->next = NULL;
-    if (!jb)
-    {
-        jb = newJob;
-    }
+    if (!jb) jb = newJob;
     else
     {
         while (temp->next) temp = temp->next;
     
         temp->next = newJob;
     }
-    
 
+    // return Job
     return jb;
 }
 
@@ -220,8 +220,10 @@ Job* createJobOp(Job* jb, int idJob, Operation* op)
     Job *newJob = NULL, *temp = jb;
     Operation *tempOp = op;
 
+    // Add a new Job
     newJob = addJob(newJob, idJob);
 
+    // If its not Null then goes by all the operations and add to the job
     if (newJob)
     {
         while (tempOp)
@@ -231,13 +233,14 @@ Job* createJobOp(Job* jb, int idJob, Operation* op)
             tempOp = tempOp->next;
         }
     }
-
+    
+    // If the newJob is Null then return the list Job
     if (!newJob) return jb;
 
     newJob->next = NULL;
 
-    if (!jb) 
-        jb = newJob;
+    // Save it in the list
+    if (!jb) jb = newJob;
     else
     {
         while (temp->next) temp = temp->next;
@@ -245,6 +248,7 @@ Job* createJobOp(Job* jb, int idJob, Operation* op)
         temp->next = newJob;
     }
 
+    // Return job
     return jb;
 }
 
@@ -252,11 +256,15 @@ Job* addJobOp(Job* jb, int idJob, Operation* op)
 {
     Job *temp = jb;
 
+    // If job is NUll then return NUll
     if (!jb) return NULL;
 
+    // Goes to the last element on the list
     while (temp->next) temp = temp->next;
 
+    // Add the Operation
     temp = addOpJobNOrder(temp, idJob, op->id, op->idMachine, op->time);
 
+    // return Job
     return jb;
 }

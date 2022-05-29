@@ -18,11 +18,11 @@ Operation* opError()
 // Get the total of Operations in the list
 int getSizeOp(Operation* op)
 {
-    int total = 1;
+    int total = 0;
 
     while (op)
     {
-        total += 1;
+        total++;
         op = op->next;
     }    
 

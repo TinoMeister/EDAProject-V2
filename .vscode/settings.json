@@ -21,7 +21,9 @@
         "sstream": "c",
         "streambuf": "c",
         "cstdlib": "c",
-        "*.txx": "c"
+        "*.txx": "c",
+        "array": "c",
+        "stdlib.h": "c"
     },
     "C_Cpp.enhancedColorization": "Enabled"
 }
