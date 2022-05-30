@@ -582,6 +582,7 @@ Job* getBestCombinations(Job* jb)
     {
         if (jb->id != idJob)
         {
+            //idJob = jb->id;
             combJb = createJobOp(combJb, jb->id, jb->op);
 
             if (verifyIsComp(combJb)) idJob = jb->id;

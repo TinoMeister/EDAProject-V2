@@ -4,7 +4,7 @@
 
 #include "../utils.h"
 
-// Load data of Operation
+// Load data of Jobs
 Job* loadData(Job* jb) 
 {
     // Open file
