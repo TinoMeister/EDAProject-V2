@@ -1640,10 +1640,13 @@ void getPossibilities(ProcessPlan* pplan)
     totalJb = getTotalJb(pplan->jb);
     totalMachine = getTotalMachine(pplan);
 
+    // Allocate in memory a array for save all jobs that has been done
     done = malloc(totalMachine * sizeof(int));
     
+    // goes pplan to pplan
     while (pplan)
     {
+        // Gets the Job
         jb = pplan->jb;
 
         for (int i = 0; i < totalMachine; i++)
