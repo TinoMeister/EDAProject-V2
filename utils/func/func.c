@@ -333,6 +333,32 @@ Job* removeGarbagedOp(Job* jb)
     return jb;
 }
 
+// Verify if the next jb has the same id and return if its true or not
+bool verifyIsRepeatedOp(Job* jb)
+{
+    Operation *op;
+    int idOp = 0;
+    bool isRepeated = false;
+
+    while (jb && !isRepeated)
+    {
+        idOp = 0;
+        op = jb->op;
+
+        while (op)
+        {
+            if (op->id == idOp) isRepeated = true;
+            else idOp = op->id;
+
+            op = op->next;
+        }
+
+        jb = jb->next;
+    }
+
+    return isRepeated;
+}
+
 // Gets all the combinations by Operation
 Job* getCombinations(Job* jb)
 {
@@ -342,6 +368,9 @@ Job* getCombinations(Job* jb)
 
     // If list is NULL, then return NULL
     if (!jb) return NULL;
+
+    // Verify if there is Operations with the same id in the job
+    if (!verifyIsRepeatedOp(jb))  return jb;
 
     // Goes Job by Job
     while (jb)
@@ -570,6 +599,23 @@ bool verifyIsComp(Job* comb)
     return isComp;
 }
 
+// Verify if the next jb has the same id and return if its true or not
+bool verifyIsRepeatedJb(Job* jb)
+{
+    int idJb = 0;
+    bool isRepeated = false;
+
+    while (jb && !isRepeated)
+    {
+        if (jb->id == idJb) isRepeated = true;
+        else idJb = jb->id;
+
+        jb = jb->next;
+    }
+
+    return isRepeated;
+}
+
 Job* getBestCombinations(Job* jb)
 {
     Job *combJb = NULL, *temp, *ant;
@@ -577,30 +623,47 @@ Job* getBestCombinations(Job* jb)
     int time, idJob = 0, average = 0, higher = 0;
 
     if (!jb) return NULL;
-    
-    while (jb)
+
+    // Check if there is a job with repeated id, because of the combinations received previously
+    if (!verifyIsRepeatedJb(jb))
     {
-        if (jb->id != idJob)
+        while (jb)
         {
-            //idJob = jb->id;
-            combJb = createJobOp(combJb, jb->id, jb->op);
-
-            if (verifyIsComp(combJb)) idJob = jb->id;
-            else
+            if (jb->id != idJob)
             {
-                temp = combJb;
-                while (temp->next)
-                {
-                    ant = temp;
-                    temp = temp->next;
-                }
-
-                ant->next = NULL;
-                free(temp);
+                idJob = jb->id;
+                combJb = createJobOp(combJb, jb->id, jb->op);
             }
-        }
 
-        jb = jb->next;
+            jb = jb->next;
+        }
+    }
+    else
+    {
+        while (jb)
+        {
+            if (jb->id != idJob)
+            {
+                //idJob = jb->id;
+                combJb = createJobOp(combJb, jb->id, jb->op);
+
+                if (verifyIsComp(combJb)) idJob = jb->id;
+                else
+                {
+                    temp = combJb;
+                    while (temp->next)
+                    {
+                        ant = temp;
+                        temp = temp->next;
+                    }
+
+                    ant->next = NULL;
+                    free(temp);
+                }
+            }
+
+            jb = jb->next;
+        }
     }
     
     return combJb;
@@ -1166,7 +1229,7 @@ Orders* addOrder(Orders* orders, ShiftingBottleneck** order, int size, int loc, 
         {
             ant = temp;
             temp = temp->next;
-        }
+        }        
 
         // verify if the new order has a better lower bone and/or a better time
         if (temp && (lowerBone < temp->lowerBone || lowerBone <= temp->lowerBone && compTime <= temp->time))
@@ -1183,7 +1246,8 @@ Orders* addOrder(Orders* orders, ShiftingBottleneck** order, int size, int loc, 
             temp->data[loc]->timeFinish = order[loc]->timeFinish;
             temp->data[loc]->next = NULL;
         }
-        else if (!temp && lowerBone <= ant->lowerBone) ant->next = newOrder; // if not, then add as the next
+        else if (!temp && lowerBone <= ant->lowerBone) 
+            ant->next = newOrder; // if not, then add as the next
     }
 
     // return the list
@@ -1308,7 +1372,7 @@ Orders* getBestOrder(ShiftingBottleneck* data, int idMachine, int totalJb)
     }
 
     // Remove the elements that have longer lowerbone
-    bestOrder = getBestLowerBone(bestOrder);
+    bestOrder = getBestLowerBone(bestOrder); 
 
     tempOr = bestOrder;
     while (tempOr)
@@ -1334,7 +1398,7 @@ Orders* getBestOrder(ShiftingBottleneck* data, int idMachine, int totalJb)
 
                     // Calculate the completion Time and lowerBone
                     if (dataO->waitTime > 0) compTime = dataO->waitTime + dataO->time;
-                    else compTime = data->time;
+                    else compTime = dataO->time;
 
                     if (compTime > dataO->timeFinish) lowerBone = compTime - dataO->timeFinish;
                     
@@ -1349,7 +1413,6 @@ Orders* getBestOrder(ShiftingBottleneck* data, int idMachine, int totalJb)
                         
                         dataO = dataO->next;
                     }
-
                     // Save the element
                     bestOrder = addOrder(bestOrder, order, totalSh, i, compTime, lowerBone);
                 }
@@ -1566,7 +1629,12 @@ TopOrders* saveFinalOrders(TopOrders* finalTopOrders, TopOrders* topOrders, Orde
             temp->orders[locM]->data[loc]->idMachine = orders->data[loc]->idMachine;
             temp->orders[locM]->data[loc]->idOp = orders->data[loc]->idOp;
             temp->orders[locM]->data[loc]->time = orders->data[loc]->time;
-            temp->orders[locM]->data[loc]->waitTime = orders->data[loc]->waitTime;
+
+            if (loc-1 >= 0 && temp->orders[locM]->data[loc-1] && orders->data[loc]->waitTime < (temp->orders[locM]->data[loc-1]->waitTime + temp->orders[locM]->data[loc-1]->time))
+                temp->orders[locM]->data[loc]->waitTime = (temp->orders[locM]->data[loc-1]->waitTime + temp->orders[locM]->data[loc-1]->time);
+            else 
+                temp->orders[locM]->data[loc]->waitTime = orders->data[loc]->waitTime;
+
             temp->orders[locM]->data[loc]->timeFinish = orders->data[loc]->timeFinish;
             temp->orders[locM]->data[loc]->next = NULL;
 
@@ -1589,34 +1657,29 @@ void getBestEscalation(TopOrders* topOrders)
     TopOrders* finalOrders = NULL;
     Job *tempJb;
     Orders *tempOr;
-    int totalOp, totalMac;
+    int totalJb, totalMac;
     
     tempJb = topOrders->jb;
-    totalOp = getTotalOpJb(tempJb);
+    totalJb = getTotalJb(tempJb);
     totalMac = getTotalMachineJb(tempJb);
 
     // Save element in order by machine
-    for (int i = 1; i <= totalOp; i++)
+    for (int i = 1; i <= totalMac; i++)
     {
         for (int j = 0; j < totalMac; j++)
         {
             tempOr = topOrders->orders[j];
 
-            while (tempOr)
+            for (int k = 0; k < tempOr->size && tempOr->data[k]; k++)
             {
-                for (int k = 0; k < tempOr->size && tempOr->data[k]; k++)
-                {
-                    if (tempOr->data[k]->idOp == i)
-                        finalOrders = saveFinalOrders(finalOrders, topOrders, tempOr, j, k);
-                }
-
-                tempOr = tempOr->next;
+                if (tempOr->data[k]->idMachine == i)
+                    finalOrders = saveFinalOrders(finalOrders, topOrders, tempOr, j, k);
             }
         }
     }
 
     // Save escalation to file
-    saveEscalation(finalOrders, totalMac);   
+    saveEscalation(finalOrders, totalMac, totalJb);   
 }
 
 /**
@@ -1643,31 +1706,26 @@ void getPossibilities(ProcessPlan* pplan)
     // Allocate in memory a array for save all jobs that has been done
     done = malloc(totalMachine * sizeof(int));
     
-    // goes pplan to pplan
-    while (pplan)
+    // Gets the Job
+    jb = pplan->jb;
+
+    for (int i = 0; i < totalMachine; i++)
     {
-        // Gets the Job
-        jb = pplan->jb;
+        // Get lower Bone 
+        lowerBoneM = getLowerBoneM(jb, totalMachine, done);
+        done[i] = lowerBoneM[0];
+        if (timeSpan < lowerBoneM[1]) timeSpan = lowerBoneM[1];
 
-        for (int i = 0; i < totalMachine; i++)
-        {
-            // Get lower Bone 
-            lowerBoneM = getLowerBoneM(jb, totalMachine, done);
-            done[i] = lowerBoneM[0];
-            if (timeSpan < lowerBoneM[1]) timeSpan = lowerBoneM[1];
+        // Get all the Jobs that has the machine
+        data = getData(jb, lowerBoneM[0], timeSpan);
+        
+        // Get best order for escalation
+        bestOrders = getBestOrder(data, lowerBoneM[0], totalJb);
+        timeSpan += bestOrders->lowerBone;
 
-            // Get all the Jobs that has the machine
-            data = getData(jb, lowerBoneM[0], timeSpan);
-            
-            // Get best order for escalation
-            bestOrders = getBestOrder(data, lowerBoneM[0], totalJb);
-            timeSpan += bestOrders->lowerBone;
+        // Save order
+        topOrders = saveTopOrders(topOrders, bestOrders, jb, i, totalMachine, timeSpan);
 
-            // Save order
-            topOrders = saveTopOrders(topOrders, bestOrders, jb, i, totalMachine, timeSpan);
-        }
-
-        pplan = pplan->next;
     }
 
     // Get best escalation

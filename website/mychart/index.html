@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <input type="file" id="files" />
+    <button id="upload">Upload</button>
+
+    <canvas id="myChart" style="width: 400px;height: 400px;"></canvas>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Read File
+        var fileInput = $('#files');
+        var uploadButton = $('#upload');
+        const chart = document.getElementById('chart');
+        var size = 0;
+
+        uploadButton.on('click', function() {
+            if (!window.FileReader) {
+                alert('Your browser is not supported')
+            }
+            var input = fileInput.get(0);
+
+            // Create a reader object
+            var reader = new FileReader();
+            if (input.files.length) {
+                var textFile = input.files[0];
+                reader.readAsText(textFile);
+                $(reader).on('load', processFile);
+            } else {
+                alert('Please upload a file before continuing')
+            }
+        });
+
+        function processFile(e) {
+            var file = e.target.result,
+                results;
+            if (file && file.length) {
+                results = file.split("\n");
+                updateChart(results);
+            }
+        }
+
+
+        function updateChart(results) {
+            var dataEle = [];
+            var totals = results[0].split(";");
+            var values;
+            var idJb, idMac, idOp, time, waitTime;
+
+            for (let i = 1; i <= totals[1]; i++) {
+                results.map((ele) => {
+
+                    if (ele != results[0] && ele != '') {
+                        values = ele.split(";");
+
+                        idMac = parseInt(values[0]);
+                        idJb = parseInt(values[1]);
+                        idOp = parseInt(values[2]);
+                        time = parseInt(values[3]);
+                        waitTime = parseInt(values[4]);
+
+                        if (i == idJb) {
+
+                            dataEle.push({
+                                id: 'Maquina ' + idMac,
+                                nested: {
+                                    value: [parseInt(waitTime), parseInt(waitTime + time)]
+                                }
+                            }, );
+                        }
+                    }
+                });
+
+                datasets.push({
+                    label: 'Job ' + i,
+                    data: dataEle,
+                    backgroundColor: 'rgb(' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ')',
+                });
+
+                dataEle = [];
+            }
+
+            myChart.update();
+        }
+
+        const datasets = [];
+
+        const data = {
+            datasets: datasets,
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                parsing: {
+                    yAxisKey: 'id',
+                    xAxisKey: 'nested.value'
+                }
+            }
+        };
+
+        const myChart = new Chart(
+            document.getElementById('myChart'),
+            config,
+        );
+    </script>
+
+</body>
+
+</html>

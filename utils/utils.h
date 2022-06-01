@@ -29,8 +29,9 @@ void saveData(Job* jb);
  * 
  * @param ord The list of orders.
  * @param totalM The total machine.
+ * @param totalJb The total job.
  */
-void saveEscalation(TopOrders* ord, int totalM);
+void saveEscalation(TopOrders* ord, int totalM, int totalJb);
 
 //---------------- Function --------------------
 

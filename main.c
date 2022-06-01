@@ -12,12 +12,38 @@ void showJb(Job * jb)
 
     if (jb != NULL)
     {
+        printf("Id \n");
+        while (jb != NULL)
+        {
+            if (jb->id != count)
+            {
+                printf("%d \n", jb->id);
+                count = jb->id;
+            }
+            
+            jb = jb->next;
+        }
+    }    
+    else 
+    {
+        printf("Lista vazia");
+    }
+
+    printf("\n\n");
+}
+
+void showJbs(Job * jb)
+{
+    int count = 0;
+
+    if (jb != NULL)
+    {
         printf("Index | Id \n");
         while (jb != NULL)
         {
-            printf("%d | %d\n", (count+1), jb->id);
-            jb = jb->next;
             count++;
+            printf("%d | %d\n", count, jb->id);
+            jb = jb->next;
         }
     }    
     else 
@@ -99,6 +125,7 @@ void showAll(Job * jb)
 
 int main(int argc, char const *argv[])
 {
+
     // Variables
     Job *jb = NULL, *result;
     char option;
@@ -145,7 +172,7 @@ int main(int argc, char const *argv[])
                 printf("Insert id of new Job: ");
                 scanf("%d", &idJb);
 
-                // Add a new operation and return True or False
+                // Add a new job and return True or False
                 result = addJob(jb, idJb);
 
                 // Print if is Successfull or if there is a problem
@@ -170,7 +197,7 @@ int main(int argc, char const *argv[])
                 showJb(jb);
 
                 // Ask for index
-                printf("\nInsert index to delete: ");
+                printf("\nInsert id to delete: ");
                 scanf("%d", &index);
 
                 // Delete the Job

@@ -8,7 +8,7 @@
 Job* loadData(Job* jb) 
 {
     // Open file
-    FILE *f = fopen("db/db.txt", "r");
+    FILE *f = fopen("db/bestdb.txt", "r");
     char line[256];
     int idJob, idOp, idMachine, time, count = 0;
 
@@ -136,7 +136,7 @@ void saveData(Job* jb)
 }
 
 // Save Escalation
-void saveEscalation(TopOrders* ord, int totalM)
+void saveEscalation(TopOrders* ord, int totalM, int totalJb)
 {
     TopOrders *temp;
 
@@ -145,6 +145,8 @@ void saveEscalation(TopOrders* ord, int totalM)
 
     // Verify if isnt null
     if (f == NULL) printf("Error opening file!\n");
+
+    fprintf(f, "%d;%d\n",totalM, totalJb);
 
     // Goes by id Machine
     for (int i = 1; i <= totalM; i++)

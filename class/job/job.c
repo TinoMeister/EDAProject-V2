@@ -16,14 +16,31 @@ int getSizeJb(Job* jb)
     return total;
 }
 
-/*------------------ Operations ------------------------*/
+// Verify if the id of job is alredy inserted
+bool existsJbId(Job* jb, int id)
+{
+    bool exists = false;
+
+    if (!jb) return exists;
+
+    while (jb)
+    {
+        if (jb->id == id) exists = true;
+
+        jb = jb->next;
+    }
+
+    return exists;
+}
+
+/*------------------ Jobs ------------------------*/
 
 Job* addJob(Job* jb, int id)
 {
     Job *aux, *newJob = malloc(sizeof(Job));
 
     // Verify if can save a new job into memory
-    if (!newJob || id <= 0) return NULL;
+    if (!newJob || id <= 0 || existsJbId(jb, id)) return NULL;
     
     // Save the information
     newJob->id = id;
@@ -56,16 +73,16 @@ Job* addJob(Job* jb, int id)
     return jb;
 }
 
-Job* deleteJob(Job* jb, int index)
+Job* deleteJob(Job* jb, int id)
 {
     Job *temp = jb, *aux;
     int total = getSizeJb(jb);
 
-    // If the list is null or of the index is not bettween 1 and the total of job then return NULL
-    if (!jb || index <= 0 || index > total) return NULL;
+    // If the list is null or of the id is not bettween 1 and the total of job then return NULL
+    if (!jb || id <= 0 || id > total) return NULL;
 
-    // If the index is 1 then gets the next element and put it as first and deletes the first
-    if (index == 1) 
+    // If the id is 1 then gets the next element and put it as first and deletes the first
+    if (id == 1) 
     {
         jb = temp->next;
         free(temp);
@@ -73,8 +90,8 @@ Job* deleteJob(Job* jb, int index)
     else
     {
         // Gets the previous element and the actual element
-        for (int i = 1; i < index; i++)
-        { 
+        while (temp && temp->id != id)
+        {
             aux = temp;
             temp = temp->next;
         }
